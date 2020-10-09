@@ -7,7 +7,7 @@ const request = "https://api.hgbrasil.com/finance?format=json&key=58402027";
 
 void main() async {
   http.Response response = await http.get(request);
-  print(json.decode(response.body)["results"]["currencies"]["USD"]);
+  print(json.decode(response.body)["results"]["currencies"]["EUR"]);
 
   runApp(MaterialApp(
     title: 'ConverteValor',
@@ -20,7 +20,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      body: Container(
+        child: Center(
+          child: Text(
+            'Converte_Valor',
+            style: TextStyle(color: Colors.red, fontSize: 30),
+          ),
+        ),
+      ),
     );
   }
 }
