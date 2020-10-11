@@ -29,8 +29,30 @@ class _MyAppState extends State<MyApp> {
         backgroundColor: Colors.grey[800],
         appBar: AppBar(
           title: Text('CONVERSOR'),
+          centerTitle: true,
           backgroundColor: Colors.amber,
         ),
-        body: Container());
+        body: FutureBuilder<Map>(
+          future: getData(),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return Center(
+                  child: Text('Carregando Dados...'),
+                );
+              default:
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Erro no carregamento :('),
+                  );
+                } else {
+                  return Container(
+                    color: Colors.green,
+                  );
+                }
+            }
+          },
+        ));
   }
 }
