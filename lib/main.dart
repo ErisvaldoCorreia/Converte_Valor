@@ -17,9 +17,9 @@ void main() async {
       primaryColor: Colors.white,
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder:
-            OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        focusedBorder:
             OutlineInputBorder(borderSide: BorderSide(color: Colors.amber)),
+        focusedBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         hintStyle: TextStyle(color: Colors.amber),
       ),
     ),
@@ -34,8 +34,47 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final realController = TextEditingController();
+  final dollarController = TextEditingController();
+  final euroController = TextEditingController();
   double dollar;
   double euro;
+
+  void _clearAll() {
+    realController.text = "";
+    dollarController.text = "";
+    euroController.text = "";
+  }
+
+  void _changeReal(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double real = double.parse(text);
+    dollarController.text = (real / dollar).toStringAsFixed(2);
+    euroController.text = (real / euro).toStringAsFixed(2);
+  }
+
+  void _changeDollar(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double dollar = double.parse(text);
+    realController.text = (dollar * this.dollar).toStringAsFixed(2);
+    euroController.text = (dollar * this.dollar / euro).toStringAsFixed(2);
+  }
+
+  void _changeEuro(String text) {
+    if (text.isEmpty) {
+      _clearAll();
+      return;
+    }
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    dollarController.text = (euro * this.euro / dollar).toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +92,14 @@ class _MyAppState extends State<MyApp> {
               case ConnectionState.none:
               case ConnectionState.waiting:
                 return Center(
-                  child: Text('Carregando Dados...'),
+                  child: Text('Carregando Dados...',
+                      style: TextStyle(color: Colors.amber, fontSize: 18.0)),
                 );
               default:
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text('Erro no carregamento :('),
+                    child: Text('Erro no carregamento :(',
+                        style: TextStyle(color: Colors.amber, fontSize: 18.0)),
                   );
                 } else {
                   dollar = snapshot.data["results"]["currencies"]["USD"]["buy"];
@@ -68,38 +109,21 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        SizedBox(height: 30.0),
                         Icon(
                           Icons.monetization_on,
                           size: 80.0,
                           color: Colors.amber,
                         ),
                         SizedBox(height: 30.0),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Valor em Reais",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            border: OutlineInputBorder(),
-                            prefixText: "R\$ ",
-                          ),
-                        ),
+                        inputFormValor("Valor em Reais", "R\$ ", realController,
+                            _changeReal),
                         Divider(),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Valor em Dólar",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            border: OutlineInputBorder(),
-                            prefixText: "US\$ ",
-                          ),
-                        ),
+                        inputFormValor("Valor em Dólar", "US\$ ",
+                            dollarController, _changeDollar),
                         Divider(),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: "Valor em Euros",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            border: OutlineInputBorder(),
-                            prefixText: "€\$ ",
-                          ),
-                        ),
+                        inputFormValor("Valor em Euros", "€ ", euroController,
+                            _changeEuro),
                       ],
                     ),
                   );
@@ -108,4 +132,20 @@ class _MyAppState extends State<MyApp> {
           },
         ));
   }
+}
+
+Widget inputFormValor(String label, String prefix,
+    TextEditingController controller, Function change) {
+  return TextField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(color: Colors.amber, fontSize: 18.0),
+    onChanged: change,
+    keyboardType: TextInputType.numberWithOptions(decimal: true),
+  );
 }
