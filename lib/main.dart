@@ -12,6 +12,17 @@ Future<Map> getData() async {
 
 void main() async {
   runApp(MaterialApp(
+    theme: ThemeData(
+      hintColor: Colors.amber,
+      primaryColor: Colors.white,
+      inputDecorationTheme: InputDecorationTheme(
+        enabledBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        focusedBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.amber)),
+        hintStyle: TextStyle(color: Colors.amber),
+      ),
+    ),
     debugShowCheckedModeBanner: false,
     home: MyApp(),
   ));
@@ -23,6 +34,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  double dollar;
+  double euro;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,8 +61,47 @@ class _MyAppState extends State<MyApp> {
                     child: Text('Erro no carregamento :('),
                   );
                 } else {
-                  return Container(
-                    color: Colors.green,
+                  dollar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                  euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Icon(
+                          Icons.monetization_on,
+                          size: 80.0,
+                          color: Colors.amber,
+                        ),
+                        SizedBox(height: 30.0),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Valor em Reais",
+                            labelStyle: TextStyle(color: Colors.amber),
+                            border: OutlineInputBorder(),
+                            prefixText: "R\$ ",
+                          ),
+                        ),
+                        Divider(),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Valor em Dólar",
+                            labelStyle: TextStyle(color: Colors.amber),
+                            border: OutlineInputBorder(),
+                            prefixText: "US\$ ",
+                          ),
+                        ),
+                        Divider(),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: "Valor em Euros",
+                            labelStyle: TextStyle(color: Colors.amber),
+                            border: OutlineInputBorder(),
+                            prefixText: "€\$ ",
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
             }
